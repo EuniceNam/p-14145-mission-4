@@ -20,6 +20,7 @@ public class WiseSayingControllerTest {
                 과거에 집착하지 마라.
                 작자미상
                 목록?keywordType=content&keyword=과거
+                목록?keywordType=author&keyword=작자
                 종료
                 """);
 

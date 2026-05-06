@@ -3,6 +3,7 @@ package com.back.domain.system.controller;
 import com.back.domain.constant.GuideMsg;
 import com.back.domain.wiseSaying.controller.WiseSayingController;
 
+import java.util.HashMap;
 import java.util.Scanner;
 
 import static com.back.domain.system.controller.SystemController.CmdMsg.*;
@@ -11,15 +12,18 @@ import static com.back.domain.system.controller.SystemController.CmdMsg.*;
 public class SystemController {
     private final Scanner sc;
     private final WiseSayingController wiseSayingController;
-    static int qid = -1; // 다른 방법?
+    private static HashMap<String, String> queryParams = new HashMap<>(); // 다른 방법?
     public enum CmdMsg {
-        NONE, DELETE, EDIT, EXIT, REGISTER, VIEW;
+        NONE, DELETE, EDIT, FILTER, EXIT, REGISTER, VIEW;
         public static CmdMsg from(String input) {
+            // '?'로 시작하는 추가적인 요청이 있는가
+            boolean hasQueryParam = parseQuery(input);
             // 삭제 및 수정
-            if (chkFormat(input)) {
+            if (hasQueryParam) {
                 switch (input.substring(0, 2)) {
                     case "삭제" -> { return DELETE;}
                     case "수정" -> { return EDIT;}
+                    case "목록" ->  { return FILTER;}
                 }
             }
             // 종료, 등록, 목록
@@ -30,13 +34,22 @@ public class SystemController {
                 default -> NONE;
             };
         }
-        private static boolean chkFormat(String input) {
-            if (input.length()>=7 && input.startsWith("?id=", 2)) {
-                try {
-                    qid = Integer.parseInt(input.substring(6));
-                } catch(Error e) { return false;}
+        private static boolean parseQuery(String input) {
+            String[] tmp = input.split("\\?");
+            if (tmp.length == 2) {
+                String[] params = tmp[1].split("&");
+                for (String s : params) {
+                    String[] keyValue = s.split("=");
+                    if (keyValue.length != 2
+                            || keyValue[1].trim().isEmpty()
+                            || keyValue[0].equals("id") && !keyValue[1].matches("\\d+")) {
+                        queryParams.clear();
+                        return false;
+                    }
+                    queryParams.put(keyValue[0], keyValue[1]);
+                }
                 return true;
-            } else return false;
+            } else { queryParams.clear(); return false; }
         }
     }
 
@@ -54,10 +67,11 @@ public class SystemController {
             switch (currentCmd) {
                 case NONE -> System.out.print(GuideMsg.ERROR.getValue());
                 case EXIT -> { return;}
-                case REGISTER -> wiseSayingController.execute(REGISTER, -1);
-                case VIEW -> wiseSayingController.execute(VIEW, -1);
-                case DELETE -> wiseSayingController.execute(DELETE, qid);
-                case EDIT -> wiseSayingController.execute(EDIT, qid);
+                case REGISTER -> wiseSayingController.execute(REGISTER, queryParams);
+                case VIEW -> wiseSayingController.execute(VIEW, queryParams);
+                case FILTER -> wiseSayingController.execute(FILTER, queryParams);
+                case DELETE -> wiseSayingController.execute(DELETE, queryParams);
+                case EDIT -> wiseSayingController.execute(EDIT, queryParams);
             }
         }
     }

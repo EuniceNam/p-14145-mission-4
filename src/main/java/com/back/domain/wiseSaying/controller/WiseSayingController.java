@@ -4,6 +4,7 @@ import com.back.domain.constant.GuideMsg;
 import com.back.domain.system.controller.SystemController;
 import com.back.domain.wiseSaying.service.WiseSayingService;
 
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class WiseSayingController {
@@ -15,12 +16,13 @@ public class WiseSayingController {
         this.wiseSayingService = wiseSayingService;
     }
 
-    public void execute(SystemController.CmdMsg cmd,int qid) {
+    public void execute(SystemController.CmdMsg cmd, HashMap<String,String> queryParams) {
         switch (cmd) {
-            case REGISTER -> register(sc);
+            case REGISTER -> register(sc); // 없어도 되는 매개변수
             case VIEW -> view();
-            case DELETE -> delete(qid);
-            case EDIT -> edit(sc, qid);
+            case FILTER -> filter(queryParams);
+            case DELETE -> delete(queryParams);
+            case EDIT -> edit(sc, queryParams);
         }
     }
     private void register(Scanner sc) {
@@ -41,7 +43,13 @@ public class WiseSayingController {
         System.out.print(GuideMsg.VIEW.getValue());
         System.out.print(wiseSayingService.readAll());
     }
-    private void delete(int qid) {
+    private void filter(HashMap<String, String> queryParams) {
+        System.out.printf(GuideMsg.FILTER.getValue(), queryParams.get("keywordType"), queryParams.get("keyword"));
+        System.out.print(GuideMsg.VIEW.getValue());
+        System.out.print(wiseSayingService.filter(queryParams.get("keywordType"), queryParams.get("keyword")));
+    }
+    private void delete(HashMap<String, String> queryParams) {
+        int qid = Integer.parseInt(queryParams.get("id"));
         boolean isDeleted = wiseSayingService.delete(qid);
         if (isDeleted) {
             System.out.printf(GuideMsg.DELETE.getValue(), qid);
@@ -49,7 +57,8 @@ public class WiseSayingController {
             System.out.printf(GuideMsg.ABSENT.getValue(), qid);
         }
     }
-    private void edit(Scanner sc, int qid) {
+    private void edit(Scanner sc, HashMap<String, String> queryParams) {
+        int qid = Integer.parseInt(queryParams.get("id"));
         String[] tmpQ = wiseSayingService.read(qid);
         if (tmpQ == null) { System.out.printf(GuideMsg.ABSENT.getValue(), qid); return;}
 

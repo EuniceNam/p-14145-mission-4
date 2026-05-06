@@ -31,7 +31,7 @@ public class SystemControllerTest {
                 """);
 
         assertThat(out)
-                .contains("잘못된 명령입니다. 다시 입력해주세요. (예시 - 등록 / 목록 / 삭제?id=숫자 / 수정?id=숫자 / 종료)\n");
+                .contains("잘못된 명령입니다. 다시 입력해주세요. (예시 - 등록 / 목록 / 목록?keywordType=author&keyword=작자 / 삭제?id=숫자 / 수정?id=숫자 / 종료)\n");
     }
 //     ...
 }

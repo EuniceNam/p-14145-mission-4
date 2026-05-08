@@ -20,9 +20,20 @@ public class AppContext {
         wiseSayingService = new WiseSayingService(wiseSayingRepository);
         wiseSayingController = new WiseSayingController(scanner, wiseSayingService);
         systemController = new SystemController(scanner, wiseSayingController);
+
+        initData();
     }
 
     public static void renew() {
         renew(new Scanner(System.in));
+    }
+
+    private static void initData() {
+        if (wiseSayingService.readPage(1).isEmpty()) {
+            int quoteTotalNo = 10;
+            for(int i = 1; i <= quoteTotalNo; i++) {
+                wiseSayingService.register("명언 " + i, "작자미상 " + i);
+            }
+        }
     }
 }

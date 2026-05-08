@@ -3,6 +3,7 @@ package com.back.domain.wiseSaying.controller;
 import com.back.domain.constant.GuideMsg;
 import com.back.domain.system.controller.SystemController;
 import com.back.domain.wiseSaying.service.WiseSayingService;
+import com.back.util.PageStringUtil;
 
 import java.util.HashMap;
 import java.util.Scanner;
@@ -14,15 +15,6 @@ public class WiseSayingController {
     public WiseSayingController(Scanner sc, WiseSayingService wiseSayingService) {
         this.sc = sc;
         this.wiseSayingService = wiseSayingService;
-    }
-
-    public void initData() {
-        if (wiseSayingService.readPage(1).isEmpty()) {
-            int quoteTotalNo = 10;
-            for(int i = 1; i <= quoteTotalNo; i++) {
-                wiseSayingService.register("명언 " + i, "작자미상 " + i);
-            }
-        }
     }
 
     public void execute(SystemController.CmdMsg cmd, HashMap<String,String> queryParams) {
@@ -53,7 +45,8 @@ public class WiseSayingController {
         queryParams.putIfAbsent("page", "1");
         System.out.print(wiseSayingService.readPage(Integer.parseInt(queryParams.get("page"))));
         System.out.print(GuideMsg.PAGE.getValue());
-        System.out.print(wiseSayingService.getPageList(Integer.parseInt(queryParams.get("page"))));
+        System.out.print(PageStringUtil
+                .getPageList(Integer.parseInt(queryParams.get("page")), wiseSayingService.getPageCount()));
     }
     private void filter(HashMap<String, String> queryParams) {
         System.out.printf(GuideMsg.FILTER.getValue(), queryParams.get("keywordType"), queryParams.get("keyword"));

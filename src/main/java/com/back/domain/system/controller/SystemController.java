@@ -64,7 +64,6 @@ public class SystemController {
 
     public void run() {
         String input;
-        wiseSayingController.initData();
         while (true) {
             System.out.print(GuideMsg.CMD.getValue());
             input = sc.nextLine();

@@ -23,7 +23,10 @@ public class SystemController {
                 switch (input.substring(0, 2)) {
                     case "삭제" -> { return DELETE;}
                     case "수정" -> { return EDIT;}
-                    case "목록" ->  { return FILTER;}
+                    case "목록" ->  {
+                        if (queryParams.containsKey("keywordType")) { return FILTER;}
+                        return VIEW;
+                    }
                 }
             }
             // 종료, 등록, 목록
@@ -42,6 +45,7 @@ public class SystemController {
                     String[] keyValue = s.split("=");
                     if (keyValue.length != 2
                             || keyValue[1].trim().isEmpty()
+                            || keyValue[0].equals("page") && !keyValue[1].matches("\\d+")
                             || keyValue[0].equals("id") && !keyValue[1].matches("\\d+")) {
                         queryParams.clear();
                         return false;
@@ -60,6 +64,7 @@ public class SystemController {
 
     public void run() {
         String input;
+        wiseSayingController.initData();
         while (true) {
             System.out.print(GuideMsg.CMD.getValue());
             input = sc.nextLine();

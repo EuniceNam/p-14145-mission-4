@@ -14,6 +14,7 @@ public enum GuideMsg {
                 번호 / 작가 / 명언
                 ----------------------
                 """),
+    PAGE("----------------------\n페이지 : "),
     FILTER("""
                 ----------------------
                 검색타입 : %s
@@ -24,7 +25,7 @@ public enum GuideMsg {
     ABSENT("%d번 명언은 존재하지 않습니다.\n"),
 
     ERROR("잘못된 명령입니다. 다시 입력해주세요. " +
-            "(예시 - 등록 / 목록 / 목록?keywordType=author&keyword=작자 / 삭제?id=숫자 / 수정?id=숫자 / 종료)\n"); // 요구사항에 없는 내용
+            "(예시 - 등록 / 목록 / 목록?page=숫자 / 목록?keywordType=author&keyword=작자 / 삭제?id=숫자 / 수정?id=숫자 / 종료)\n"); // 요구사항에 없는 내용
 
     final String value;
     GuideMsg(String value) {this.value = value;}

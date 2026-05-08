@@ -16,10 +16,19 @@ public class WiseSayingController {
         this.wiseSayingService = wiseSayingService;
     }
 
+    public void initData() {
+        if (wiseSayingService.readPage(1).isEmpty()) {
+            int quoteTotalNo = 10;
+            for(int i = 1; i <= quoteTotalNo; i++) {
+                wiseSayingService.register("명언 " + i, "작자미상 " + i);
+            }
+        }
+    }
+
     public void execute(SystemController.CmdMsg cmd, HashMap<String,String> queryParams) {
         switch (cmd) {
             case REGISTER -> register(sc); // 없어도 되는 매개변수
-            case VIEW -> view();
+            case VIEW -> view(queryParams);
             case FILTER -> filter(queryParams);
             case DELETE -> delete(queryParams);
             case EDIT -> edit(sc, queryParams);
@@ -39,9 +48,12 @@ public class WiseSayingController {
             System.out.print(GuideMsg.EMPTY.getValue());
         }
     }
-    private void view() {
+    private void view(HashMap<String, String> queryParams) {
         System.out.print(GuideMsg.VIEW.getValue());
-        System.out.print(wiseSayingService.readAll());
+        queryParams.putIfAbsent("page", "1");
+        System.out.print(wiseSayingService.readPage(Integer.parseInt(queryParams.get("page"))));
+        System.out.print(GuideMsg.PAGE.getValue());
+        System.out.print(wiseSayingService.getPageList(Integer.parseInt(queryParams.get("page"))));
     }
     private void filter(HashMap<String, String> queryParams) {
         System.out.printf(GuideMsg.FILTER.getValue(), queryParams.get("keywordType"), queryParams.get("keyword"));

@@ -3,7 +3,8 @@ package com.back.domain.wiseSaying.service;
 import com.back.domain.wiseSaying.entity.WiseSaying;
 import com.back.domain.wiseSaying.repository.WiseSayingRepository;
 
-import java.util.Iterator;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class WiseSayingService {
@@ -19,20 +20,44 @@ public class WiseSayingService {
         lastQuoteNo = wiseSayingRepository.create(quote, author);
         return lastQuoteNo;
     }
-    public String readAll() {
-        Iterator<WiseSaying> it = wiseSayingRepository.getIterator();
-        WiseSaying q;
-        StringBuilder quoteListSB = new StringBuilder();
-        while(it.hasNext()) {
-            q = it.next();
-            quoteListSB.append(q.getQuoteId()).append(" / ").append(q.getAuthor())
-                    .append(" / ").append(q.getQuote()).append("\n");
+    public String readPage(int pageNo) {
+        List<WiseSaying> page = wiseSayingRepository.fetchPage(pageNo);
+        if (page.isEmpty()) { return "";}
+        Collections.reverse(page);
+        return page.stream().map(WiseSaying::toString)
+                .collect(Collectors.joining("\n", "", "\n"));
+    }
+    // - TODO: 다른 클래스로 분리하기
+    public String getPageList(int pageNo) {
+        int lastPageNo = wiseSayingRepository.getPageCount();
+        int range = 1;
+        if (lastPageNo <= 2 * range + 1) { // 슬라이딩 윈도우 불필요
+            return pageListString(pageNo, 1, lastPageNo) +"\n";
         }
-        return quoteListSB.toString();
+        if (pageNo <= range+2) {
+            return pageListString(pageNo, 1, pageNo+range) + " ... " + lastPageNo;
+        } else if (pageNo > lastPageNo - range) {
+            return "1 ... " + pageListString(pageNo, lastPageNo - range, lastPageNo) +"\n";
+        } else {
+            return "1 ... " + pageListString(pageNo, pageNo - range, pageNo + range) + " ... " + lastPageNo +"\n";
+        }
+    }
+    public String pageListString(int pageNo, int startPageNo, int lastPageNo) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = startPageNo; i <= lastPageNo; i++) {
+            if (i == pageNo) {
+                sb.append("[").append(i).append("] / ");
+            } else {
+                sb.append(i).append(" / ");
+            }
+        }
+        sb.delete(sb.length() - 3, sb.length());
+        return sb.toString();
     }
     public String filter(String keywordType, String keyword) {
-        return wiseSayingRepository.filter(keywordType, keyword)
-                .map(q -> q.getQuoteId() + " / " + q.getAuthor() + " / " + q.getQuote())
+        List<WiseSaying> filteredPage = wiseSayingRepository.filter(keywordType, keyword);
+        Collections.reverse(filteredPage);
+        return filteredPage.stream().map(WiseSaying::toString)
                 .collect(Collectors.joining("\n", "", "\n"));
     }
 

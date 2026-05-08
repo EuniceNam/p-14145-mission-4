@@ -22,5 +22,7 @@ public class WiseSaying {
 
     public boolean compareNo(int i) {return (quoteId == i);}
 
+    public String toString() {return quoteId + " / " + author + " / " + quote;}
+
     public static void resetLastQuoteNoForTest() {lastQuoteNo = 0;}
 }

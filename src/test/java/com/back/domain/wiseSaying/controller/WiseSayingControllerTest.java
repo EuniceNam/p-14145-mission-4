@@ -10,6 +10,39 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class WiseSayingControllerTest {
     @Test
+    @DisplayName("14: 초기값과 페이지")
+    void t14() {
+        final String out = AppTestRunner.run("""
+                목록
+                목록?page=2
+                종료
+                """);
+
+        assertThat(out)
+                .isEqualTo("""
+                        == 명언 앱 ==
+                        명령) 번호 / 작가 / 명언
+                        ----------------------
+                        10 / 작자미상 10 / 명언 10
+                        9 / 작자미상 9 / 명언 9
+                        8 / 작자미상 8 / 명언 8
+                        7 / 작자미상 7 / 명언 7
+                        6 / 작자미상 6 / 명언 6
+                        ----------------------
+                        페이지 : [1] / 2
+                        명령) 번호 / 작가 / 명언
+                        ----------------------
+                        5 / 작자미상 5 / 명언 5
+                        4 / 작자미상 4 / 명언 4
+                        3 / 작자미상 3 / 명언 3
+                        2 / 작자미상 2 / 명언 2
+                        1 / 작자미상 1 / 명언 1
+                        ----------------------
+                        페이지 : 1 / [2]
+                        명령)\s""");
+    }
+
+    @Test
     @DisplayName("13: 검색")
     void t13() {
         final String out = AppTestRunner.run("""
@@ -46,6 +79,7 @@ public class WiseSayingControllerTest {
                         1 / 작자미상 / 현재를 사랑하라.
                         명령)\s""");
     }
+
     @Test
     @DisplayName("3: 등록")
     void t3() {
